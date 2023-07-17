@@ -1,8 +1,7 @@
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
 import { useState, useRef, useMemo, useEffect, MutableRefObject } from "react";
 import { BrowserMultiFormatReader, BrowserQRCodeReader, IScannerControls } from "@zxing/browser"
-//import './QRCodeReader.scss'
-//import Spinner from '../Spinner/Spinner';
+import './QRCodeReader.css'
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { IQRCodeReaderProps } from './QRCodeReader.types';
 import React from 'react';
@@ -93,7 +92,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         video: {
           deviceId: cameras[selectedIndex].deviceId
         }
-      }, 'smartpos-qr-reader-preview', (result, error) => {
+      }, 'qr-reader-preview', (result, error) => {
         setIsLoading(false)
         if (result) {
           props.onResult(result.getText())
@@ -137,7 +136,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   const rotateVideo = () => {
-    let el = document.getElementById("smartpos-qr-reader-preview")
+    let el = document.getElementById("qr-reader-preview")
     let removeClass = true
     if (selectedIndex !== undefined && el) {
       DEVICES_WITH_WRONG_CAMERA_ROTATION.forEach(item => {
@@ -154,8 +153,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   return <div className='qr-code-reader'>
     <section>
-      {isLoading ? <>{/* TODO */}</> : null}
-      <video id="smartpos-qr-reader-preview" muted playsInline >
+      {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
+      <video id="qr-reader-preview" muted playsInline >
       </video>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' sx={{ display: 'flex', margin: 'auto', marginTop: '1em', cursor: 'pointer' }} onClick={changeCamera} /> : null}
     </section>
