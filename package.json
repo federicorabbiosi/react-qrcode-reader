@@ -16,9 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "rm -rf dist && NODE_ENV=production babel src/lib --extensions '.tsx' --out-dir dist",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "babel src/lib --out-dir dist"
   },
   "eslintConfig": {
     "extends": [
