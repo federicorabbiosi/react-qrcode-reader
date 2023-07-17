@@ -5,6 +5,8 @@ import dts from "rollup-plugin-dts";
 import terser from "@rollup/plugin-terser";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import scss from "rollup-plugin-scss";
+import replace from "@rollup/plugin-replace";
+import babel from "@rollup/plugin-babel";
 
 const packageJson = require("./package.json");
 
@@ -24,9 +26,15 @@ export default [
       },
     ],
     plugins: [
+      replace({
+        "process.env.NODE_ENV": 'production'
+      }),
+      babel({
+        exclude: "node_modules/**"
+      }),
       peerDepsExternal(),
-      commonjs(),
       resolve(),
+      commonjs(),
       scss(),
       typescript({ tsconfig: "./tsconfig.json" }),
       terser()
@@ -36,6 +44,9 @@ export default [
   {
     input: "src/index.ts",
     output: [{ file: "dist/types.d.ts", format: "es" }],
-    plugins: [dts.default()],
+    plugins: [
+      dts.default(),
+      scss(),
+    ],
   },
 ];
