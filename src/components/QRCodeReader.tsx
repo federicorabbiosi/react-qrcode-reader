@@ -4,6 +4,8 @@ import { BrowserMultiFormatReader, BrowserQRCodeReader, IScannerControls } from 
 //import './QRCodeReader.scss'
 //import Spinner from '../Spinner/Spinner';
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
+import { IQRCodeReaderProps } from './QRCodeReader.types';
+import React from 'react';
 
 /**
  * Some devices could have camera rotate, fix it rotating the video.
@@ -18,11 +20,6 @@ const DEVICES_WITH_WRONG_CAMERA_ROTATION = [
 ]
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
-
-export interface IQRCodeReaderProps {
-  onResult: (code: string) => void
-  deviceModelName?: string
-}
 
 /**
  * Read QRCode using decodeFromConstraints
