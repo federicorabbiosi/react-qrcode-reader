@@ -16,8 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "_build": "react-scripts build",
-    "build": "rm -rf dist && NODE_ENV=production babel src/lib --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,__snapshots__",
+    "build": "rm -rf dist && NODE_ENV=production babel src/lib --extensions '.tsx' --out-dir dist",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -45,8 +44,8 @@
     "react-scripts": "5.0.1",
     "babel-cli": "^6.26.0"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/index.tsx",
+  "module": "dist/index.tsx",
   "files": [ "dist", "README.md" ],
   "author": {
     "name": "Federico Rabbiosi",
