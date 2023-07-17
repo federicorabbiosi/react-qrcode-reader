@@ -1,2 +1,2 @@
-import QRCodeReader from "./components";
+import QRCodeReader from "./components"
 export default QRCodeReader

@@ -20,6 +20,9 @@ const DEVICES_WITH_WRONG_CAMERA_ROTATION = [
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
 
+const rotateVideoStyle = {
+  transform: 'rotate(270deg)'
+}
 /**
  * Read QRCode using decodeFromConstraints
  * @param props 
@@ -143,6 +146,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         //console.log(deviceModelName + " - " + item.name)
         //console.log(cameras[selectedIndex].label + " - " + JSON.stringify(item.camerasLabel))
         if (item.name === deviceModelName && item.camerasLabel.includes(cameras[selectedIndex].label)) {
+          el!.style.transform = 'rotate(270deg)';
           el!.className += 'rotate-video-270'
           removeClass = false
         }
@@ -154,7 +158,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   return <div className='qr-code-reader'>
     <section>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
-      <video id="qr-reader-preview" muted playsInline >
+      <video id="qr-reader-preview" style={{maxWidth: '100%'}} muted playsInline >
       </video>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' sx={{ display: 'flex', margin: 'auto', marginTop: '1em', cursor: 'pointer' }} onClick={changeCamera} /> : null}
     </section>
