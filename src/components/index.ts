@@ -1,1 +1,2 @@
-export * from "./QRCodeReader"
+import QRCodeReader from "./QRCodeReader";
+export default QRCodeReader
