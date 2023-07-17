@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "rollup -c --bundleConfigAsCjs"
+    "build": "echo *** Building QRCodeReader... && rollup -c --bundleConfigAsCjs"
   },
   "eslintConfig": {
     "extends": [
