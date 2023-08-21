@@ -17,7 +17,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cross-env NODE_ENV=production && rollup -c --bundleConfigAsCjs"
+    "build": "rollup -c --bundleConfigAsCjs",
+    "test": "cross-env NODE_ENV=production && echo $NODE_ENV"
   },
   "eslintConfig": {
     "extends": [
