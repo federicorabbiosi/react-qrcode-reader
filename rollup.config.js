@@ -31,7 +31,9 @@ export default [
       peerDepsExternal(),
       resolve(),
       commonjs(),
-      scss(),
+      scss({
+        outputStyle: 'compressed'
+      }),
       typescript({ tsconfig: "./tsconfig.json" }),
       terser()
     ],
