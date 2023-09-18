@@ -158,7 +158,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   return <div className='qr-code-reader'>
     <section>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
-      <video id="qr-reader-preview" style={{maxWidth: '100%'}} muted playsInline >
+      <video id="qr-reader-preview" muted playsInline >
       </video>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' sx={{ display: 'flex', margin: 'auto', marginTop: '1em', cursor: 'pointer' }} onClick={changeCamera} /> : null}
     </section>
