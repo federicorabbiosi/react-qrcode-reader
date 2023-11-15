@@ -1,9 +1,10 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
 
 interface IQRCodeReaderProps {
     onResult: (code: string) => void;
     loadingComponent?: ReactNode;
     deviceModelName?: string;
+    style?: CSSProperties;
 }
 
 /**

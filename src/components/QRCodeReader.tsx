@@ -10,7 +10,7 @@ import React from 'react';
  * Some devices could have camera rotate, fix it rotating the video.
  * name is the deviceName we have it in sessionStorage.
  * camerasLabel is an array of String containing the label of the camera that have to be rotated
- */ 
+ */
 const DEVICES_WITH_WRONG_CAMERA_ROTATION = [
   {
     name: "Poynt-P61B",
@@ -20,9 +20,6 @@ const DEVICES_WITH_WRONG_CAMERA_ROTATION = [
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
 
-const rotateVideoStyle = {
-  transform: 'rotate(270deg)'
-}
 /**
  * Read QRCode using decodeFromConstraints
  * @param props 
@@ -156,9 +153,9 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   return <div className='qrcode-reader'>
-    <section style={{display:  'flex', justifyContent: 'center', flexDirection: 'column'}}>
+    <section style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
-      <video id="qr-reader-preview" style={{maxWidth: '100%'}} muted playsInline >
+      <video id="qr-reader-preview" style={{ maxWidth: '100%', ...props.style}} muted playsInline >
       </video>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' sx={{ display: 'flex', margin: 'auto', marginTop: '1em', cursor: 'pointer' }} onClick={changeCamera} /> : null}
     </section>
