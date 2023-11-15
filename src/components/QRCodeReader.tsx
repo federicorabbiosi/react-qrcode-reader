@@ -11,11 +11,11 @@ import React from 'react';
  * name is the deviceName we have it in sessionStorage.
  * camerasLabel is an array of String containing the label of the camera that have to be rotated
  */
-const DEVICES_WITH_WRONG_CAMERA_ROTATION = [
-  {
+const DEVICES_WITH_WRONG_CAMERA_ROTATION: any[] = [
+  /*{
     name: "Poynt-P61B",
     camerasLabel: ["Video device 2"]
-  }
+  }*/
 ]
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
