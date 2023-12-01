@@ -12,10 +12,10 @@ import React from 'react';
  * camerasLabel is an array of String containing the label of the camera that have to be rotated
  */
 const DEVICES_WITH_WRONG_CAMERA_ROTATION: any[] = [
-  /*{
+  {
     name: "Poynt-P61B",
     camerasLabel: ["Video device 2"]
-  }*/
+  }
 ]
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
@@ -138,10 +138,11 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const rotateVideo = () => {
     let el = document.getElementById("qr-reader-preview")
     let removeClass = true
+    console.log("Known devices: " + JSON.stringify(DEVICES_WITH_WRONG_CAMERA_ROTATION))
+    console.log("Current device: " + deviceModelName + JSON.stringify(cameras))
+    console.log("Selected Camera Index: " + selectedIndex)
     if (selectedIndex !== undefined && el) {
       DEVICES_WITH_WRONG_CAMERA_ROTATION.forEach(item => {
-        //console.log(deviceModelName + " - " + item.name)
-        //console.log(cameras[selectedIndex].label + " - " + JSON.stringify(item.camerasLabel))
         if (item.name === deviceModelName && item.camerasLabel.includes(cameras[selectedIndex].label)) {
           el!.style.transform = 'rotate(270deg)';
           el!.className += 'rotate-video-270'
