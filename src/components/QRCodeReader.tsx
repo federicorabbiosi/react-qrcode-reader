@@ -138,9 +138,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const rotateVideo = () => {
     let el = document.getElementById("qr-reader-preview")
     let removeClass = true
-    console.log("Known devices: " + JSON.stringify(DEVICES_WITH_WRONG_CAMERA_ROTATION))
-    console.log("Current device: " + deviceModelName + JSON.stringify(cameras))
-    console.log("Selected Camera Index: " + selectedIndex)
     if (selectedIndex !== undefined && el) {
       DEVICES_WITH_WRONG_CAMERA_ROTATION.forEach(item => {
         if (item.name === deviceModelName && item.camerasLabel.includes(cameras[selectedIndex].label)) {
