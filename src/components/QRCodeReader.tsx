@@ -208,8 +208,10 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
       <video id="qr-reader-preview" style={{ maxWidth: '100%', ...props.style}} muted playsInline >
       </video>
-      {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
-      {flash !== 'unavailable' ? <FlashlightButton /> : null}
+      <div className='actions-icon-root'>
+        {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
+        {flash !== 'unavailable' ? <FlashlightButton /> : null}
+      </div>
     </section>
   </div>
 }
