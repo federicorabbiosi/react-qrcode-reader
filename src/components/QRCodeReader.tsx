@@ -1,4 +1,6 @@
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
+import FlashlightOnRoundedIcon from '@mui/icons-material/FlashlightOnRounded';
+import FlashlightOffRoundedIcon from '@mui/icons-material/FlashlightOffRounded';
 import { useState, useRef, useMemo, useEffect, MutableRefObject } from "react";
 import { BrowserMultiFormatReader, BrowserQRCodeReader, IScannerControls } from "@zxing/browser"
 import './QRCodeReader.css'
@@ -29,6 +31,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const [cameras, setCameras]: any = useState()
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
+  const [flashEnabled, setFlash] = useState(false)
   const deviceModelName = props.deviceModelName || sessionStorage.getItem("smartpos.device_model_name") || "nd"
 
   const _controlsRef: MutableRefObject<IScannerControls | null> = useRef(null);
@@ -150,12 +153,26 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
   }
 
+  const FlashlightButton = () => {
+    const onButtonClick = () => {
+      if (props.toggleFlashLight) props.toggleFlashLight()
+      setFlash(!flashEnabled)
+    }
+
+    if (flashEnabled) {
+      return <FlashlightOffRoundedIcon fontSize='large' onClick={onButtonClick} />
+    } else {
+      return <FlashlightOnRoundedIcon fontSize='large' onClick={onButtonClick} />
+    }
+  }
+
   return <div className='qrcode-reader'>
     <section style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
       <video id="qr-reader-preview" style={{ maxWidth: '100%', ...props.style}} muted playsInline >
       </video>
-      {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' sx={{ display: 'flex', margin: 'auto', marginTop: '1em', cursor: 'pointer' }} onClick={changeCamera} /> : null}
+      {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
+      {props.toggleFlashLight ? <FlashlightButton /> : null}
     </section>
   </div>
 }

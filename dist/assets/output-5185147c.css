@@ -1,11 +1,13 @@
 .rotate-video-270 {
   transform: rotate(270deg);
 }
+
 .qrcode-reader section {
   display: flex;
   justify-content: center;
   flex-direction: column;
 }
+
 #qr-reader-preview {
   max-width: 100%;
   max-height: 90%;
@@ -16,11 +18,11 @@
 .actions-icon-root {
   display: inline-flex;
   justify-content: center;
-  margin-top: 1em
+  margin-top: 1em;
 }
 
 .actions-icon-root * {
-  margin-left: .5em;
-  margin-right: .5em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
   cursor: pointer;
 }
