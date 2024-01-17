@@ -1,3 +1,4 @@
+import React from 'react';
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
 import FlashlightOnRoundedIcon from '@mui/icons-material/FlashlightOnRounded';
 import FlashlightOffRoundedIcon from '@mui/icons-material/FlashlightOffRounded';
@@ -6,7 +7,6 @@ import { BrowserMultiFormatReader, BrowserQRCodeReader, IScannerControls } from 
 import './QRCodeReader.css'
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { IQRCodeReaderProps } from './QRCodeReader.types';
-import React from 'react';
 
 /**
  * Some devices could have camera rotate, fix it rotating the video.
@@ -31,7 +31,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const [cameras, setCameras]: any = useState()
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
-  const [flashEnabled, setFlash] = useState(false)
+  const [flash, setFlash] = useState<boolean | 'unavailable'>('unavailable')
   const deviceModelName = props.deviceModelName || sessionStorage.getItem("smartpos.device_model_name") || "nd"
 
   const _controlsRef: MutableRefObject<IScannerControls | null> = useRef(null);
@@ -106,6 +106,28 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       }).catch(() => {
         // select the first one ???
       })
+
+      // Handle flash light
+      isFlashLightAvailable(cameras[selectedIndex].deviceId).then(isAvailable => {
+        console.log("flash available: " + isAvailable)
+        setFlash(isAvailable ? false : 'unavailable')
+      }).catch(() => {
+        setFlash('unavailable')
+      })
+    }
+  }
+
+  const isFlashLightAvailable = async (deviceId: string) => {
+    if ('mediaDevices' in navigator) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: deviceId
+        }
+      });
+      const flashAvailable = BrowserQRCodeReader.mediaStreamIsTorchCompatible(stream);
+      return flashAvailable;
+    } else {
+      return Promise.reject()
     }
   }
 
@@ -155,11 +177,26 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const FlashlightButton = () => {
     const onButtonClick = () => {
-      if (props.toggleFlashLight) props.toggleFlashLight()
-      setFlash(!flashEnabled)
+      if (selectedIndex) {
+        // cast to any because advanced constraint aren't update
+        (navigator.mediaDevices as any).getUserMedia({
+          video: {
+            deviceId: cameras[selectedIndex].deviceId
+          }
+        }).then((stream: any) => {
+          stream.getVideoTracks()[0].applyConstraints({
+            advanced: [{
+              torch: !flash
+            }]
+          })
+          setFlash(!flash)
+        }).catch((e: any) => {
+          console.log(e)
+        })
+      }
     }
 
-    if (flashEnabled) {
+    if (flash === true) {
       return <FlashlightOffRoundedIcon fontSize='large' onClick={onButtonClick} />
     } else {
       return <FlashlightOnRoundedIcon fontSize='large' onClick={onButtonClick} />
@@ -172,7 +209,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       <video id="qr-reader-preview" style={{ maxWidth: '100%', ...props.style}} muted playsInline >
       </video>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
-      {props.toggleFlashLight ? <FlashlightButton /> : null}
+      {flash !== 'unavailable' ? <FlashlightButton /> : null}
     </section>
   </div>
 }

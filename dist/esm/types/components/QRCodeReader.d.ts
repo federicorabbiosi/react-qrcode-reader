@@ -1,6 +1,6 @@
+import React from 'react';
 import './QRCodeReader.css';
 import { IQRCodeReaderProps } from './QRCodeReader.types';
-import React from 'react';
 /**
  * Read QRCode using decodeFromConstraints
  * @param props

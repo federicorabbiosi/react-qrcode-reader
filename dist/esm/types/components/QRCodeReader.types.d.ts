@@ -4,5 +4,4 @@ export interface IQRCodeReaderProps {
     loadingComponent?: ReactNode;
     deviceModelName?: string;
     style?: CSSProperties;
-    toggleFlashLight?: () => void;
 }
