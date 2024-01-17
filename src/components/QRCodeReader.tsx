@@ -22,6 +22,11 @@ const DEVICES_WITH_WRONG_CAMERA_ROTATION: any[] = [
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
 
+const actionsButtonStyle = {
+  marginLeft: '.5em',
+  marginRight: '.5em',
+  cursor: 'pointer'
+}
 /**
  * Read QRCode using decodeFromConstraints
  * @param props 
@@ -91,6 +96,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       // Start reading
       // N.B. decodeFromContraints has a lower video quality, but work on every device
       // decodeFromVideoDevice has better video quality, but on some device (ex. Poynt-P61B) doesn't work due to unsupported video codec
+      console.log("Use camera " + selectedIndex + " id:" + cameras[selectedIndex].deviceId)
       _codeReader.decodeFromConstraints({
         video: {
           deviceId: cameras[selectedIndex].deviceId
@@ -103,31 +109,32 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         }
       }).then(controls => {
         _controlsRef.current = controls
-      }).catch(() => {
+      }).catch((e) => {
+        console.log(e)
         // select the first one ???
       })
 
       // Handle flash light
-      isFlashLightAvailable(cameras[selectedIndex].deviceId).then(isAvailable => {
+      isFlashLightAvailable().then(isAvailable => {
         console.log("flash available: " + isAvailable)
         setFlash(isAvailable ? false : 'unavailable')
-      }).catch(() => {
+      }).catch((e) => {
+        console.log(e)
         setFlash('unavailable')
       })
     }
   }
 
-  const isFlashLightAvailable = async (deviceId: string) => {
+  const isFlashLightAvailable = async () => {
     if ('mediaDevices' in navigator) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: deviceId
-        }
+        video: true
       });
       const flashAvailable = BrowserQRCodeReader.mediaStreamIsTorchCompatible(stream);
       return flashAvailable;
     } else {
-      return Promise.reject()
+      console.log("mediaDevices not found")
+      throw 'unavailable'
     }
   }
 
@@ -150,6 +157,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const changeCamera = () => {
     setIsLoading(true)
+    setFlash('unavailable')
     if (_controlsRef.current) {
       stop()
       if (selectedIndex !== undefined && cameras.length > selectedIndex + 1) {
@@ -197,9 +205,9 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
 
     if (flash === true) {
-      return <FlashlightOffRoundedIcon fontSize='large' onClick={onButtonClick} />
+      return <FlashlightOffRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={onButtonClick} />
     } else {
-      return <FlashlightOnRoundedIcon fontSize='large' onClick={onButtonClick} />
+      return <FlashlightOnRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={onButtonClick} />
     }
   }
 
@@ -208,8 +216,12 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
       <video id="qr-reader-preview" style={{ maxWidth: '100%', ...props.style}} muted playsInline >
       </video>
-      <div className='actions-icon-root'>
-        {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
+      <div className='actions-icon-root' style={{
+        display: 'inline-flex',
+        justifyContent: 'center',
+        marginTop: '1em',
+      }}>
+        {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
         {flash !== 'unavailable' ? <FlashlightButton /> : null}
       </div>
     </section>
