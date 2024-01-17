@@ -1,10 +1,10 @@
+import './QRCodeReader.css'
 import React from 'react';
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
 import FlashlightOnRoundedIcon from '@mui/icons-material/FlashlightOnRounded';
 import FlashlightOffRoundedIcon from '@mui/icons-material/FlashlightOffRounded';
 import { useState, useRef, useMemo, useEffect, MutableRefObject } from "react";
 import { BrowserMultiFormatReader, BrowserQRCodeReader, IScannerControls } from "@zxing/browser"
-import './QRCodeReader.css'
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { IQRCodeReaderProps } from './QRCodeReader.types';
 

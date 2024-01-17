@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "esnext",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
@@ -13,10 +14,5 @@
     "emitDeclarationOnly": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
-  },
-  "exclude": [
-    "dist",
-    "node_modules",
-    "src/**/*.stories.tsx"
-  ]
+  }
 }
