@@ -45,7 +45,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
 
   useEffect(() => {
-    console.log("1.0.10")
+    console.log("1.0.11")
     // Get available input camera devices
     BrowserQRCodeReader.listVideoInputDevices().then(devices => {
       //devices.push(devices[0])
@@ -98,38 +98,17 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
       // Start video
       decodeVideo(deviceId)
-
-      // Handle flash
-      //handleFlashLight(deviceId)
-
-     /* isFlashLightAvailable(deviceId).then(isAvailable => {
-        console.log("flash available: " + isAvailable)
-        setFlash(isAvailable ? false : 'unavailable')
-
-      }).catch((e) => {
-        console.log(e)
-        setFlash('unavailable')
-      })
-      */
     }
   }
 
-  const handleFlashLight = (deviceId: string) => {
-    navigator.mediaDevices.getUserMedia()
-  }
-
-  const isFlashLightAvailable = async (deviceId: string) => {
-    if ('mediaDevices' in navigator) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: deviceId
-        }
-      });
-      const flashAvailable = BrowserQRCodeReader.mediaStreamIsTorchCompatible(stream);
-      return flashAvailable;
-    } else {
-      console.log("mediaDevices not found")
-      throw 'unavailable'
+  const isFlashLightAvailable = () => {
+    const video = document.querySelector('video')
+    if (video && video.srcObject) {
+      try {
+        return (video.srcObject as any).getTracks()[0].getCapabilities().torch
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 
@@ -151,59 +130,13 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       }
     }).then(controls => {
       _controlsRef.current = controls
+      // Check if flashLight is available, and show action button
+      setFlash(isFlashLightAvailable() === true ? false : 'unavailable')
     }).catch((e) => {
       console.log(e)
       // select the first one ???
     })
   }
-/*
-  const handleFlashLight = (deviceId: string) => {
-    console.log("Turn on torch")
-    if ('mediaDevices' in navigator) {
-      navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: deviceId
-        }
-      }).then((stream) => {
-        const video = document.querySelector('video')
-
-        const track = stream.getVideoTracks()[0] as any
-
-        if (video) {
-          video.srcObject = stream
-
-          video.addEventListener('loadedmetadata', (e) => {
-            console.log('loadedmetadata')
-            window.setTimeout(() => {
-              console.log('CapabilitiesReady')
-              onCapabilitiesReady(track.getCapabilities())
-            }, 500)
-          })
-        }
-
-        const onCapabilitiesReady = (capabilities: any) => {
-          console.log(capabilities)
-
-          if (capabilities.torch) {
-            track.applyConstraints({
-              advanced: [{
-                torch: true
-              }]
-            }).catch((e: any) => {
-              console.log(e)
-              console.log('Torch not available')
-            })
-          } else {
-            console.log('Torch not available')
-          }
-        }
-      })
-    } else {
-      console.log("mediaDevices not found")
-      throw 'unavailable'
-    }
-  }
-  */
 
   const stop = () => {
     try {
@@ -282,7 +215,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         marginTop: '1em',
       }}>
         {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
-        {/*flash !== 'unavailable'*/ true ? <FlashlightButton /> : null}
+        {flash !== 'unavailable' ? <FlashlightButton /> : null}
       </div>
     </section>
   </div>
