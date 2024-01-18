@@ -45,7 +45,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
 
   useEffect(() => {
-    console.log("1.0.9")
+    console.log("1.0.10")
     // Get available input camera devices
     BrowserQRCodeReader.listVideoInputDevices().then(devices => {
       //devices.push(devices[0])
@@ -92,43 +92,71 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const onCameraChange = async () => {
     if (selectedIndex !== undefined && cameras && cameras.length > +selectedIndex) {
+      const deviceId = cameras[selectedIndex].deviceId
       // if necessary rotate video
       rotateVideo()
-      // Start reading
-      // N.B. decodeFromContraints has a lower video quality, but work on every device
-      // decodeFromVideoDevice has better video quality, but on some device (ex. Poynt-P61B) doesn't work due to unsupported video codec
-      console.log("Use camera " + selectedIndex + " id:" + cameras[selectedIndex].deviceId)
-      _codeReader.decodeFromConstraints({
-        video: {
-          deviceId: cameras[selectedIndex].deviceId
-        }
-      }, 'qr-reader-preview', (result, error) => {
-        setIsLoading(false)
-        if (result) {
-          props.onResult(result.getText())
-          stop()
-        }
-      }).then(controls => {
-        _controlsRef.current = controls
-      }).catch((e) => {
-        console.log(e)
-        // select the first one ???
-      })
 
-      // Handle capabilities
-      handleFlashLight(cameras[selectedIndex].deviceId)
+      // Start video
+      decodeVideo(deviceId)
 
-      // Handle flash light
-      /*isFlashLightAvailable(cameras[selectedIndex].deviceId).then(isAvailable => {
+      // Handle flash
+      //handleFlashLight(deviceId)
+
+     /* isFlashLightAvailable(deviceId).then(isAvailable => {
         console.log("flash available: " + isAvailable)
         setFlash(isAvailable ? false : 'unavailable')
+
       }).catch((e) => {
         console.log(e)
         setFlash('unavailable')
-      })*/
+      })
+      */
     }
   }
 
+  const handleFlashLight = (deviceId: string) => {
+    navigator.mediaDevices.getUserMedia()
+  }
+
+  const isFlashLightAvailable = async (deviceId: string) => {
+    if ('mediaDevices' in navigator) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: deviceId
+        }
+      });
+      const flashAvailable = BrowserQRCodeReader.mediaStreamIsTorchCompatible(stream);
+      return flashAvailable;
+    } else {
+      console.log("mediaDevices not found")
+      throw 'unavailable'
+    }
+  }
+
+  const decodeVideo = (deviceId: string) => {
+    // Start reading
+    // N.B. decodeFromContraints has a lower video quality, but work on every device
+    // decodeFromVideoDevice has better video quality, but on some device (ex. Poynt-P61B) doesn't work due to unsupported video codec
+    console.log("Decode from camera " + selectedIndex + " id:" + deviceId)
+
+    _codeReader.decodeFromConstraints({
+      video: {
+        deviceId: deviceId
+      }
+    }, 'qr-reader-preview', (result, error) => {
+      setIsLoading(false)
+      if (result) {
+        props.onResult(result.getText())
+        stop()
+      }
+    }).then(controls => {
+      _controlsRef.current = controls
+    }).catch((e) => {
+      console.log(e)
+      // select the first one ???
+    })
+  }
+/*
   const handleFlashLight = (deviceId: string) => {
     console.log("Turn on torch")
     if ('mediaDevices' in navigator) {
@@ -175,6 +203,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       throw 'unavailable'
     }
   }
+  */
 
   const stop = () => {
     try {
@@ -223,22 +252,15 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const FlashlightButton = () => {
     const onButtonClick = () => {
-      if (selectedIndex) {
-        // cast to any because advanced constraint aren't update
-        (navigator.mediaDevices as any).getUserMedia({
-          video: {
-            deviceId: cameras[selectedIndex].deviceId
-          }
-        }).then((stream: any) => {
-          stream.getVideoTracks()[0].applyConstraints({
-            advanced: [{
-              torch: !flash
-            }]
-          })
-          setFlash(!flash)
-        }).catch((e: any) => {
-          console.log(e)
-        })
+      const video = document.querySelector('video')
+      if (video && video.srcObject) {
+        const newFlashValue = flash === true ? false : true
+        try {
+          (video.srcObject as any).getTracks()[0].applyConstraints({advanced: [{torch: newFlashValue}]})
+          setFlash(newFlashValue)
+        } catch {
+          console.log('Torch unavailable')
+        }
       }
     }
 
@@ -260,7 +282,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         marginTop: '1em',
       }}>
         {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
-        {flash !== 'unavailable' ? <FlashlightButton /> : null}
+        {/*flash !== 'unavailable'*/ true ? <FlashlightButton /> : null}
       </div>
     </section>
   </div>
