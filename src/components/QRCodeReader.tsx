@@ -114,24 +114,61 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         // select the first one ???
       })
 
+      // Handle capabilities
+      handleFlashLight(cameras[selectedIndex].deviceId)
+
       // Handle flash light
-      isFlashLightAvailable().then(isAvailable => {
+      /*isFlashLightAvailable(cameras[selectedIndex].deviceId).then(isAvailable => {
         console.log("flash available: " + isAvailable)
         setFlash(isAvailable ? false : 'unavailable')
       }).catch((e) => {
         console.log(e)
         setFlash('unavailable')
-      })
+      })*/
     }
   }
 
-  const isFlashLightAvailable = async () => {
+  const handleFlashLight = (deviceId: string) => {
+    console.log("Turn on torch")
     if ('mediaDevices' in navigator) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true
-      });
-      const flashAvailable = BrowserQRCodeReader.mediaStreamIsTorchCompatible(stream);
-      return flashAvailable;
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: deviceId
+        }
+      }).then((stream) => {
+        const video = document.querySelector('video')
+
+        const track = stream.getVideoTracks()[0] as any
+
+        if (video) {
+          video.srcObject = stream
+
+          video.addEventListener('loadedmetadata', (e) => {
+            console.log('loadedmetadata')
+            window.setTimeout(() => {
+              console.log('CapabilitiesReady')
+              onCapabilitiesReady(track.getCapabilities())
+            }, 500)
+          })
+        }
+
+        const onCapabilitiesReady = (capabilities: any) => {
+          console.log(capabilities)
+
+          if (capabilities.torch) {
+            track.applyConstraints({
+              advanced: [{
+                torch: true
+              }]
+            }).catch((e: any) => {
+              console.log(e)
+              console.log('Torch not available')
+            })
+          } else {
+            console.log('Torch not available')
+          }
+        }
+      })
     } else {
       console.log("mediaDevices not found")
       throw 'unavailable'
