@@ -45,7 +45,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
 
   useEffect(() => {
-    console.log("1.0.11")
     // Get available input camera devices
     BrowserQRCodeReader.listVideoInputDevices().then(devices => {
       //devices.push(devices[0])
@@ -116,8 +115,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     // Start reading
     // N.B. decodeFromContraints has a lower video quality, but work on every device
     // decodeFromVideoDevice has better video quality, but on some device (ex. Poynt-P61B) doesn't work due to unsupported video codec
-    console.log("Decode from camera " + selectedIndex + " id:" + deviceId)
-
     _codeReader.decodeFromConstraints({
       video: {
         deviceId: deviceId
@@ -192,7 +189,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
           (video.srcObject as any).getTracks()[0].applyConstraints({advanced: [{torch: newFlashValue}]})
           setFlash(newFlashValue)
         } catch {
-          console.log('Torch unavailable')
+          // Errore changing torch value
         }
       }
     }
