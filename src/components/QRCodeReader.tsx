@@ -45,6 +45,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
 
   useEffect(() => {
+    console.log("1.0.9")
     // Get available input camera devices
     BrowserQRCodeReader.listVideoInputDevices().then(devices => {
       //devices.push(devices[0])
