@@ -232,8 +232,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       justifyContent: 'center',
       marginTop: '1em',
     }}>
-      {true ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
-      {true ? <FlashlightButton /> : null}
+      {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
+      {flash !== 'unavailable' ? <FlashlightButton /> : null}
     </div>
   </div>
 }
