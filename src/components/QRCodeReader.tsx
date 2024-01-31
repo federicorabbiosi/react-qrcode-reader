@@ -1,5 +1,5 @@
 import './QRCodeReader.css'
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
 import FlashlightOnRoundedIcon from '@mui/icons-material/FlashlightOnRounded';
 import FlashlightOffRoundedIcon from '@mui/icons-material/FlashlightOffRounded';
@@ -43,6 +43,25 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const hints = new Map()
   hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
   var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
+
+  var viewFinderStyle: CSSProperties = {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    border: '3em solid rgba(0,0,0,0.3)',
+    boxShadow: `${props.viewFinderStyle?.color || '#09b0e8'} 0px 0px 0px 3px inset`
+  }
+
+  var sectionStyle: CSSProperties = {
+    position: 'relative',
+    width: '100%',
+    overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    ...props.style
+  }
+
 
   useEffect(() => {
     // Get available input camera devices
@@ -186,7 +205,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       if (video && video.srcObject) {
         const newFlashValue = flash === true ? false : true
         try {
-          (video.srcObject as any).getTracks()[0].applyConstraints({advanced: [{torch: newFlashValue}]})
+          (video.srcObject as any).getTracks()[0].applyConstraints({ advanced: [{ torch: newFlashValue }] })
           setFlash(newFlashValue)
         } catch {
           // Errore changing torch value
@@ -201,20 +220,21 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
   }
 
-  return <div className='qrcode-reader'>
-    <section style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+  return <div className='qrcode-reader' style={{display: 'flex', flexDirection: 'column'}}>
+    <section style={sectionStyle}>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
-      <video id="qr-reader-preview" style={{ maxWidth: '100%', ...props.style}} muted playsInline >
+      <video id="qr-reader-preview" style={{ maxWidth: '100%' }} muted playsInline >
       </video>
-      <div className='actions-icon-root' style={{
-        display: 'inline-flex',
-        justifyContent: 'center',
-        marginTop: '1em',
-      }}>
-        {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
-        {flash !== 'unavailable' ? <FlashlightButton /> : null}
-      </div>
+      {props.viewFinder ? <div style={viewFinderStyle}></div> : <></>}
     </section>
+    <div className='actions-icon-root' style={{
+      display: 'inline-flex',
+      justifyContent: 'center',
+      marginTop: '1em',
+    }}>
+      {true ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
+      {true ? <FlashlightButton /> : null}
+    </div>
   </div>
 }
 

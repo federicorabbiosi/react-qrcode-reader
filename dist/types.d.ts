@@ -5,6 +5,10 @@ interface IQRCodeReaderProps {
     loadingComponent?: ReactNode;
     deviceModelName?: string;
     style?: CSSProperties;
+    viewFinder?: boolean;
+    viewFinderStyle?: {
+        color: string;
+    };
 }
 
 /**
