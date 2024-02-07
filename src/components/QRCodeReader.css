@@ -24,7 +24,7 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  border: '3em solid rgba(0,0,0,0.3)';
+  border: 3em solid rgba(0,0,0,0.3);
 }
 
 .actions-icon-root {
