@@ -17,9 +17,6 @@ const DEVICES_WITH_WRONG_CAMERA_ROTATION: any[] = [
   {
     name: "Poynt-P61B",
     camerasLabel: ["Video device 2"]
-  }, {
-    name: "pc-test",
-    camerasLabel: ["Integrated Camera"]
   }
 ]
 
@@ -211,8 +208,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       {props.viewFinder ? <div className='qrcode-reader-viewfinder' style={{boxShadow: `${props.viewFinderStyle?.color || '#09b0e8'} 0px 0px 0px 3px inset`}}></div> : <></>}
     </section>
     <div className='actions-icon-root'>
-      {true /*cameras && cameras.length > 1*/ ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
-      {true /*flash !== 'unavailable'*/ ? <FlashlightButton /> : null}
+      {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
+      {flash !== 'unavailable' ? <FlashlightButton /> : null}
     </div>
   </div>
 }
