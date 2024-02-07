@@ -1,5 +1,5 @@
 import './QRCodeReader.css'
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
 import FlashlightOnRoundedIcon from '@mui/icons-material/FlashlightOnRounded';
 import FlashlightOffRoundedIcon from '@mui/icons-material/FlashlightOffRounded';
@@ -17,16 +17,14 @@ const DEVICES_WITH_WRONG_CAMERA_ROTATION: any[] = [
   {
     name: "Poynt-P61B",
     camerasLabel: ["Video device 2"]
+  }, {
+    name: "pc-test",
+    camerasLabel: ["Integrated Camera"]
   }
 ]
 
 const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
 
-const actionsButtonStyle = {
-  marginLeft: '.5em',
-  marginRight: '.5em',
-  cursor: 'pointer'
-}
 /**
  * Read QRCode using decodeFromConstraints
  * @param props 
@@ -43,25 +41,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const hints = new Map()
   hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
   var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
-
-  var viewFinderStyle: CSSProperties = {
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
-    border: '3em solid rgba(0,0,0,0.3)',
-    boxShadow: `${props.viewFinderStyle?.color || '#09b0e8'} 0px 0px 0px 3px inset`
-  }
-
-  var sectionStyle: CSSProperties = {
-    position: 'relative',
-    width: '100%',
-    overflow: 'hidden',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    ...props.style
-  }
-
 
   useEffect(() => {
     // Get available input camera devices
@@ -189,9 +168,13 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     let removeClass = true
     if (selectedIndex !== undefined && el) {
       DEVICES_WITH_WRONG_CAMERA_ROTATION.forEach(item => {
-        if (item.name === deviceModelName && item.camerasLabel.includes(cameras[selectedIndex].label)) {
-          el!.style.transform = 'rotate(270deg)';
-          el!.className += 'rotate-video-270'
+        if (item.name === deviceModelName && cameras[selectedIndex].label.includes(item.camerasLabel)) {
+
+          // with css class
+          if (el) el.className += ("rotate-video-270")
+
+          //el!.style.transform = 'rotate(270deg)';
+          //el!.className += 'rotate-video-270'
           removeClass = false
         }
       })
@@ -214,26 +197,22 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
 
     if (flash === true) {
-      return <FlashlightOffRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={onButtonClick} />
+      return <FlashlightOffRoundedIcon fontSize='large' onClick={onButtonClick} />
     } else {
-      return <FlashlightOnRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={onButtonClick} />
+      return <FlashlightOnRoundedIcon fontSize='large' onClick={onButtonClick} />
     }
   }
 
-  return <div className='qrcode-reader' style={{display: 'flex', flexDirection: 'column'}}>
-    <section style={sectionStyle}>
+  return <div className='qrcode-reader'>
+    <section style={{...props.style}}>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
-      <video id="qr-reader-preview" style={{ maxWidth: '100%' }} muted playsInline >
+      <video id="qr-reader-preview" muted playsInline >
       </video>
-      {props.viewFinder ? <div style={viewFinderStyle}></div> : <></>}
+      {props.viewFinder ? <div className='qrcode-reader-viewfinder' style={{boxShadow: `${props.viewFinderStyle?.color || '#09b0e8'} 0px 0px 0px 3px inset`}}></div> : <></>}
     </section>
-    <div className='actions-icon-root' style={{
-      display: 'inline-flex',
-      justifyContent: 'center',
-      marginTop: '1em',
-    }}>
-      {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' style={actionsButtonStyle} onClick={changeCamera} /> : null}
-      {flash !== 'unavailable' ? <FlashlightButton /> : null}
+    <div className='actions-icon-root'>
+      {true /*cameras && cameras.length > 1*/ ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
+      {true /*flash !== 'unavailable'*/ ? <FlashlightButton /> : null}
     </div>
   </div>
 }
