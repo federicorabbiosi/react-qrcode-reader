@@ -184,11 +184,15 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       const video = document.querySelector('video')
       if (video && video.srcObject) {
         const newFlashValue = flash === true ? false : true
+        console.log("Nef Flash value: " + newFlashValue)
         try {
           (video.srcObject as any).getTracks()[0].applyConstraints({ advanced: [{ torch: newFlashValue }] })
+          console.log(video.srcObject)
+          console.log((video.srcObject as any).getTracks())
           setFlash(newFlashValue)
-        } catch {
-          // Errore changing torch value
+        } catch (e) {
+          console.log(e)
+          // Error changing torch value
         }
       }
     }
