@@ -9,4 +9,5 @@ export interface IQRCodeReaderProps {
   viewFinderStyle?: {
     color: string
   }
+  default?: "front" | "back"
 }

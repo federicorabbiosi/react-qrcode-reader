@@ -57,10 +57,17 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       let _cameraIndex = 0
 
       if (cameras.length > 1) {
-        // Select favorite camera
-        const favoriteCameraIndex = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA) || 0
-        if (cameras.length > +favoriteCameraIndex) {
-          _cameraIndex = +favoriteCameraIndex
+        // Select the default one if present
+        if (props.default) {
+          _cameraIndex = cameras.findIndex((item: any) => item?.label?.includes(props.default))
+        }
+        if ((props.default && _cameraIndex === -1) || (props.default === undefined)) {
+          // Select favorite camera
+          _cameraIndex = 0 // findIndex could return -1
+          const favoriteCameraIndex = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA) || 0
+          if (cameras.length > +favoriteCameraIndex) {
+            _cameraIndex = +favoriteCameraIndex
+          }
         }
       }
       setSelectedIndex(_cameraIndex)
@@ -184,15 +191,12 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       const video = document.querySelector('video')
       if (video && video.srcObject) {
         const newFlashValue = flash === true ? false : true
-        console.log("Nef Flash value: " + newFlashValue)
         try {
           (video.srcObject as any).getTracks()[0].applyConstraints({ advanced: [{ torch: newFlashValue }] })
-          console.log(video.srcObject)
-          console.log((video.srcObject as any).getTracks())
           setFlash(newFlashValue)
         } catch (e) {
-          console.log(e)
           // Error changing torch value
+          console.log(e)
         }
       }
     }
