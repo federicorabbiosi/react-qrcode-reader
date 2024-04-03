@@ -52,25 +52,49 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     // eslint-disable-next-line
   }, [])
 
-  useEffect(() => {
-    if (cameras && cameras.length > 0) {
-      let _cameraIndex = 0
+  const getDefaultCameraIndex = async (items: [], fallbackIndex: number): Promise<number> => {
+    let _cameraIndex = items.length >= fallbackIndex ? fallbackIndex : 0 // Array length check
+    _cameraIndex = items.findIndex((item: any) => item?.label?.includes(props.default))
+    if (_cameraIndex === -1) {
+      // Try facingMode prop
+      return navigator.mediaDevices.getUserMedia({video: {facingMode: props.default === 'front' ? 'user' : 'environment'}})
+        .then(mediaStream => {
+          let tracks = mediaStream.getTracks()
+          if (tracks && tracks.length > 0) {
+            let track = tracks[0]
+            let defaultCameraId = track.getSettings().deviceId
+            _cameraIndex = items.findIndex((item: any) => item.deviceId === defaultCameraId)
+          }
+          return _cameraIndex !== -1 ? _cameraIndex : fallbackIndex
+        }).catch(() => {
+          return fallbackIndex
+        })
+    } else return Promise.resolve(_cameraIndex)
+  }
 
-      if (cameras.length > 1) {
+  // Get saved index and check
+  const getFavoriteCameraIndexSafe = (arrayLength: number) => {
+    let tmp = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA) || 0
+    try {
+      tmp = +tmp
+      return arrayLength > tmp ? tmp : 0
+    } catch {
+      return 0
+    }
+  }
+
+  useEffect( () => {
+    if (cameras && cameras.length > 0) {
+      if (cameras.length === 1) setSelectedIndex(0)
+      else {
+        let favoriteCameraIndex = getFavoriteCameraIndexSafe(cameras.length)
         // Select the default one if present
         if (props.default) {
-          _cameraIndex = cameras.findIndex((item: any) => item?.label?.includes(props.default))
-        }
-        if ((props.default && _cameraIndex === -1) || (props.default === undefined)) {
-          // Select favorite camera
-          _cameraIndex = 0 // findIndex could return -1
-          const favoriteCameraIndex = localStorage.getItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA) || 0
-          if (cameras.length > +favoriteCameraIndex) {
-            _cameraIndex = +favoriteCameraIndex
-          }
+          getDefaultCameraIndex(cameras, favoriteCameraIndex).then(index => setSelectedIndex(index))
+        } else {
+          setSelectedIndex(favoriteCameraIndex)
         }
       }
-      setSelectedIndex(_cameraIndex)
     }
   }, [cameras])
 
