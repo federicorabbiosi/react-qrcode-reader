@@ -109,8 +109,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
           onCameraChange()
         }
       })
-
-      localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA, `${selectedIndex}`)
+      if (!props.default) localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA, `${selectedIndex}`)
     }
     //eslint-disable-next-line
   }, [selectedIndex])
