@@ -129,11 +129,13 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     const video = document.querySelector('video')
     if (video && video.srcObject) {
       try {
-        return (video.srcObject as any).getTracks()[0].getCapabilities().torch
+        return (video.srcObject as any).getTracks()[0].getCapabilities().torch as boolean
       } catch (e) {
         console.error(e)
+        return false
       }
     }
+    return false
   }
 
   const decodeVideo = (deviceId: string) => {
@@ -216,8 +218,13 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
         const newFlashValue = flash === true ? false : true
         try {
           let track = (video.srcObject as any).getTracks()[0]
-          BrowserQRCodeReader.mediaStreamSetTorch(track, newFlashValue)
-          setFlash(newFlashValue)
+
+          track.applyConstraints({
+            advanced: [{
+              fillLightMode: newFlashValue ? 'flash' : 'off',
+              torch: newFlashValue ? true : false,
+            } as any],
+          })
         } catch (e) {
           // Error changing torch value
           console.log(e)
