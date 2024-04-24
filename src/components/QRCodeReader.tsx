@@ -37,7 +37,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const _controlsRef: MutableRefObject<IScannerControls | null> = useRef(null);
   const hints = new Map()
   hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
-  var _codeReader = useMemo(() => new BrowserMultiFormatReader(hints), [])
+  var _codeReader : BrowserMultiFormatReader | undefined = new BrowserMultiFormatReader(hints)
 
   useEffect(() => {
     // Get available input camera devices
@@ -142,24 +142,26 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     // Start reading
     // N.B. decodeFromContraints has a lower video quality, but work on every device
     // decodeFromVideoDevice has better video quality, but on some device (ex. Poynt-P61B) doesn't work due to unsupported video codec
-    _codeReader.decodeFromConstraints({
-      video: {
-        deviceId: deviceId
-      }
-    }, 'qr-reader-preview', (result, error) => {
-      setIsLoading(false)
-      if (result) {
-        props.onResult(result.getText())
-        stop()
-      }
-    }).then(controls => {
-      _controlsRef.current = controls
-      // Check if flashLight is available, and show action button
-      setFlash(isFlashLightAvailable() === true ? false : 'unavailable')
-    }).catch((e) => {
-      console.log(e)
-      // select the first one ???
-    })
+    if (_codeReader) {
+      _codeReader.decodeFromConstraints({
+        video: {
+          deviceId: deviceId
+        }
+      }, 'qr-reader-preview', (result, error) => {
+        setIsLoading(false)
+        if (result) {
+          props.onResult(result.getText())
+          stop()
+        }
+      }).then(controls => {
+        _controlsRef.current = controls
+        // Check if flashLight is available, and show action button
+        setFlash(isFlashLightAvailable() === true ? false : 'unavailable')
+      }).catch((e) => {
+        console.log(e)
+        // select the first one ???
+      })
+    }
   }
 
   const stop = () => {
@@ -174,6 +176,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
           }, 1000)
         */
       }
+      _codeReader = undefined
     } catch (e) {
       // Error
     }
