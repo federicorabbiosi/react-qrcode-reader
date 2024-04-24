@@ -127,6 +127,10 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   const isFlashLightAvailable = () => {
+    // N910 has problem with torch
+    if (props.deviceModelName === 'N910') {
+      return false
+    }
     const video = document.querySelector('video')
     if (video && video.srcObject) {
       try {
@@ -217,6 +221,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   const FlashlightButton = () => {
+
     const onButtonClick = () => {
       const video = document.querySelector('video')
       if (video && video.srcObject) {
