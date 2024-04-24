@@ -3,7 +3,7 @@ import React from 'react';
 import CameraswitchRoundedIcon from '@mui/icons-material/CameraswitchRounded';
 import FlashlightOnRoundedIcon from '@mui/icons-material/FlashlightOnRounded';
 import FlashlightOffRoundedIcon from '@mui/icons-material/FlashlightOffRounded';
-import { useState, useRef, useMemo, useEffect, MutableRefObject } from "react";
+import { useState, useRef, useEffect, MutableRefObject } from "react";
 import { BrowserMultiFormatReader, BrowserQRCodeReader, IScannerControls } from "@zxing/browser"
 import { BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { IQRCodeReaderProps } from './QRCodeReader.types';
@@ -37,7 +37,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   const _controlsRef: MutableRefObject<IScannerControls | null> = useRef(null);
   const hints = new Map()
   hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
-  var _codeReader : BrowserMultiFormatReader | undefined = new BrowserMultiFormatReader(hints)
+  var _codeReader : BrowserMultiFormatReader | undefined
 
   useEffect(() => {
     // Get available input camera devices
@@ -101,6 +101,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   useEffect(() => {
     if (cameras && selectedIndex !== undefined) {
       let retry = true
+      _codeReader = new BrowserMultiFormatReader(hints)
 
       onCameraChange().catch(() => {
         // Sometimes camera is not ready. This is a workaround to retry connnection
@@ -166,6 +167,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const stop = () => {
     try {
+      _codeReader = undefined
       if (_controlsRef.current) {
         _controlsRef.current.stop()
       } else {
@@ -176,8 +178,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
           }, 1000)
         */
       }
-      _codeReader = undefined
     } catch (e) {
+      console.log(e)
       // Error
     }
   }
