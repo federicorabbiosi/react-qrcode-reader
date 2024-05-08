@@ -127,10 +127,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   const isFlashLightAvailable = () => {
-    // N910 has problem with torch
-    if (props.deviceModelName === 'N910') {
-      return false
-    }
     const video = document.querySelector('video')
     if (video && video.srcObject) {
       try {
@@ -155,6 +151,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       }, 'qr-reader-preview', (result, error) => {
         setIsLoading(false)
         if (result) {
+          _codeReader = undefined
           props.onResult(result.getText())
           stop()
         }
@@ -171,7 +168,12 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const stop = () => {
     try {
-      _codeReader = undefined
+      const video = document.querySelector('video')
+      if (video) {
+        BrowserQRCodeReader.cleanVideoSource(video)
+      }
+      BrowserQRCodeReader.releaseAllStreams()
+
       if (_controlsRef.current) {
         _controlsRef.current.stop()
       } else {
