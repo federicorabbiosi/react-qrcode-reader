@@ -151,9 +151,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       }, 'qr-reader-preview', (result, error) => {
         setIsLoading(false)
         if (result) {
-          _codeReader = undefined
-          props.onResult(result.getText())
           stop()
+          props.onResult(result.getText())
         }
       }).then(controls => {
         _controlsRef.current = controls
@@ -168,6 +167,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const stop = () => {
     try {
+      _codeReader = undefined
       if (_controlsRef.current) {
         _controlsRef.current.stop()
       }
