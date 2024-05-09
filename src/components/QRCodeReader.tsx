@@ -168,21 +168,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const stop = () => {
     try {
-      const video = document.querySelector('video')
-      if (video) {
-        BrowserQRCodeReader.cleanVideoSource(video)
-      }
-      BrowserQRCodeReader.releaseAllStreams()
-
       if (_controlsRef.current) {
         _controlsRef.current.stop()
-      } else {
-        /*
-          setTimeout(() => {
-            console.log('Stop timeout')
-            if (_controlsRef.current) _controlsRef.current.stop()
-          }, 1000)
-        */
       }
     } catch (e) {
       console.log(e)
@@ -237,6 +224,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
               torch: newFlashValue ? true : false,
             } as any],
           })
+          setFlash(newFlashValue)
         } catch (e) {
           // Error changing torch value
           console.log(e)
