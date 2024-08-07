@@ -36,7 +36,24 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
 
   const _controlsRef: MutableRefObject<IScannerControls | null> = useRef(null);
   const hints = new Map()
-  hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
+  if (props.codeType && props.codeType === "barcode") {
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.CODABAR,
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.CODE_39,
+      BarcodeFormat.CODE_93,
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.ITF,
+      BarcodeFormat.RSS_14,
+      BarcodeFormat.UPC_A,
+      BarcodeFormat.UPC_E,
+      BarcodeFormat.UPC_EAN_EXTENSION,
+    ])
+  } else {
+    // default is qrcode
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
+  }
   var _codeReader : BrowserMultiFormatReader | undefined
 
   useEffect(() => {

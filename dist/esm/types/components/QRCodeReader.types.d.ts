@@ -9,4 +9,5 @@ export interface IQRCodeReaderProps {
         color: string;
     };
     default?: "front" | "back";
+    codeType?: "qrcode" | "barcode";
 }
