@@ -163,7 +163,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     if (_codeReader) {
       _codeReader.decodeFromConstraints({
         video: {
-          deviceId: deviceId
+          deviceId: deviceId,
+          width: 1920
         }
       }, 'qr-reader-preview', (result, error) => {
         setIsLoading(false)
