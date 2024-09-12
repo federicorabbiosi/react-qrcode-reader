@@ -74,8 +74,12 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     _cameraIndex = items.findIndex((item: any) => item?.label?.includes(props.default))
     if (_cameraIndex === -1) {
       // Try facingMode prop
-      return navigator.mediaDevices.getUserMedia({video: {facingMode: props.default === 'front' ? 'user' : 'environment'}})
-        .then(mediaStream => {
+      return navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: props.default === 'front' ? 'user' : 'environment',
+          width: 1920
+        }
+      }).then(mediaStream => {
           let tracks = mediaStream.getTracks()
           if (tracks && tracks.length > 0) {
             let track = tracks[0]
