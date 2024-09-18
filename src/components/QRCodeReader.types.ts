@@ -11,4 +11,5 @@ export interface IQRCodeReaderProps {
   }
   default?: "front" | "back"
   codeType?: "qrcode" | "barcode"
+  resolution?: 1920
 }

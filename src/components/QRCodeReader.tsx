@@ -76,8 +76,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       // Try facingMode prop
       return navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: props.default === 'front' ? 'user' : 'environment',
-          width: 1920
+          facingMode: props.default === 'front' ? 'user' : 'environment'
         }
       }).then(mediaStream => {
           let tracks = mediaStream.getTracks()
@@ -168,7 +167,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       _codeReader.decodeFromConstraints({
         video: {
           deviceId: deviceId,
-          width: 1920
+          width: props.resolution ? props.resolution : undefined
         }
       }, 'qr-reader-preview', (result, error) => {
         setIsLoading(false)
