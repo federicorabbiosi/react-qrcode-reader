@@ -28,7 +28,7 @@ const LOCAL_STORAGE_KEY_FAVORITE_CAMERA = "smartpos.camera_index"
  * @returns 
  */
 const QRCodeReader = (props: IQRCodeReaderProps) => {
-  const [cameras, setCameras]: any = useState()
+  const [cameras, setCameras] = useState<any>()
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
   const [flash, setFlash] = useState<boolean | 'unavailable'>('unavailable')
@@ -59,6 +59,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   useEffect(() => {
     // Get available input camera devices
     BrowserQRCodeReader.listVideoInputDevices().then(devices => {
+      console.log(devices)
       //devices.push(devices[0])
       setCameras(devices)
     })

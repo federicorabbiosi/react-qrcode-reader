@@ -1,6 +1,6 @@
 {
   "name": "react-qrcode-reader",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "type": "module",
   "scripts": {
     "start": "react-scripts start",
@@ -42,8 +42,8 @@
     "@types/node": "^16.18.38",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@zxing/browser": "^0.1.4",
-    "@zxing/library": "^0.20.0",
+    "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.21.3",
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",
     "postcss": "^8.4.34",
