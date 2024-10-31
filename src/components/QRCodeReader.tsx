@@ -54,14 +54,30 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     // default is qrcode
     hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX])
   }
-  var _codeReader : BrowserMultiFormatReader | undefined
+  var _codeReader: BrowserMultiFormatReader | undefined
 
   useEffect(() => {
+
     // Get available input camera devices
     BrowserQRCodeReader.listVideoInputDevices().then(devices => {
+      console.log("Devices from listVideoInputDevices:")
       console.log(devices)
-      //devices.push(devices[0])
-      setCameras(devices)
+      let camerasArray: any[] = []
+      navigator.mediaDevices.enumerateDevices().then((_devices) => {
+
+        console.log("Devices from enumerateDevices:")
+        _devices.forEach(device => {
+          if (device.kind === "videoinput") {
+            camerasArray.push(device)
+            console.log(device)
+          }
+        })
+      })
+      // from BrowserQRCodeReader.listVideoInputDevices()
+      //setCameras(devices)
+
+      //From enumerateDevices
+      setCameras(camerasArray)
     })
 
     return () => {
@@ -80,16 +96,16 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
           facingMode: props.default === 'front' ? 'user' : 'environment'
         }
       }).then(mediaStream => {
-          let tracks = mediaStream.getTracks()
-          if (tracks && tracks.length > 0) {
-            let track = tracks[0]
-            let defaultCameraId = track.getSettings().deviceId
-            _cameraIndex = items.findIndex((item: any) => item.deviceId === defaultCameraId)
-          }
-          return _cameraIndex !== -1 ? _cameraIndex : fallbackIndex
-        }).catch(() => {
-          return fallbackIndex
-        })
+        let tracks = mediaStream.getTracks()
+        if (tracks && tracks.length > 0) {
+          let track = tracks[0]
+          let defaultCameraId = track.getSettings().deviceId
+          _cameraIndex = items.findIndex((item: any) => item.deviceId === defaultCameraId)
+        }
+        return _cameraIndex !== -1 ? _cameraIndex : fallbackIndex
+      }).catch(() => {
+        return fallbackIndex
+      })
     } else return Promise.resolve(_cameraIndex)
   }
 
@@ -104,7 +120,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
   }
 
-  useEffect( () => {
+  useEffect(() => {
     if (cameras && cameras.length > 0) {
       if (cameras.length === 1) setSelectedIndex(0)
       else {
@@ -262,11 +278,11 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   return <div className='qrcode-reader'>
-    <section style={{...props.style}}>
+    <section style={{ ...props.style }}>
       {isLoading ? props.loadingComponent ? props.loadingComponent : <></> : null}
       <video id="qr-reader-preview" muted playsInline >
       </video>
-      {props.viewFinder ? <div className='qrcode-reader-viewfinder' style={{boxShadow: `${props.viewFinderStyle?.color || '#09b0e8'} 0px 0px 0px 3px inset`}}></div> : <></>}
+      {props.viewFinder ? <div className='qrcode-reader-viewfinder' style={{ boxShadow: `${props.viewFinderStyle?.color || '#09b0e8'} 0px 0px 0px 3px inset` }}></div> : <></>}
     </section>
     <div className='actions-icon-root'>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
