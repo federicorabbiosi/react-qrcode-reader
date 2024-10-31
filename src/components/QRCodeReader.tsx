@@ -59,7 +59,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   useEffect(() => {
     setAvailableDevices().then(n => {
       console.log("There are " + n + " devices")
-      if (n < 1) {
+      if (n <= 1) {
         setTimeout(() => {
           setAvailableDevices().then((n2) => {
             console.log("Now there are " + n2 + " devices")
