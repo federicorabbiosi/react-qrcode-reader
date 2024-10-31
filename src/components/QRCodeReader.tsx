@@ -57,27 +57,15 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   var _codeReader: BrowserMultiFormatReader | undefined
 
   useEffect(() => {
-
-    // Get available input camera devices
-    BrowserQRCodeReader.listVideoInputDevices().then(devices => {
-      console.log("Devices from listVideoInputDevices:")
-      console.log(devices)
-      let camerasArray: any[] = []
-      navigator.mediaDevices.enumerateDevices().then((_devices) => {
-
-        console.log("Devices from enumerateDevices:")
-        _devices.forEach(device => {
-          if (device.kind === "videoinput") {
-            camerasArray.push(device)
-            console.log(device)
-          }
-        })
-      })
-      // from BrowserQRCodeReader.listVideoInputDevices()
-      //setCameras(devices)
-
-      //From enumerateDevices
-      setCameras(camerasArray)
+    setAvailableDevices().then(n => {
+      console.log("There are " + n + " devices")
+      if (n < 1) {
+        setTimeout(() => {
+          setAvailableDevices().then((n2) => {
+            console.log("Now there are " + n2 + " devices")
+          })
+        }, 300)
+      }
     })
 
     return () => {
@@ -85,6 +73,17 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
     // eslint-disable-next-line
   }, [])
+
+  /**
+   * 
+   * @returns the number of availableDevices
+   */
+  const setAvailableDevices = async () => {
+    return BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
+      setCameras(_devices)
+      return _devices?.length || 0
+    })
+  }
 
   const getDefaultCameraIndex = async (items: [], fallbackIndex: number): Promise<number> => {
     let _cameraIndex = items.length >= fallbackIndex ? fallbackIndex : 0 // Array length check
