@@ -57,16 +57,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   var _codeReader: BrowserMultiFormatReader | undefined
 
   useEffect(() => {
-    setAvailableDevices().then(n => {
-      console.log("There are " + n + " devices")
-      if (n <= 1) {
-        setTimeout(() => {
-          setAvailableDevices().then((n2) => {
-            console.log("Now there are " + n2 + " devices")
-          })
-        }, 300)
-      }
-    })
+    getAvailableDevicesSafe(true)
 
     return () => {
       stop()
@@ -74,15 +65,30 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     // eslint-disable-next-line
   }, [])
 
+  const getAvailableDevicesSafe = async (retry: boolean) => {
+    return BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
+      if (retry && _devices.length <= 1) {
+        // retry
+        setTimeout(() => {
+          getAvailableDevicesSafe(false)
+        }, 300)
+      } else {
+        setCameras(_devices)
+      }
+    }).catch(() => {})
+  }
+
   /**
    * 
    * @returns the number of availableDevices
    */
-  const setAvailableDevices = async () => {
-    return BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
-      setCameras(_devices)
-      return _devices?.length || 0
-    })
+  const setAvailableDevices = async (retry: boolean) => {
+    if (retry) {
+      return BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
+        setCameras(_devices)
+        return _devices?.length || 0
+      })
+    }
   }
 
   const getDefaultCameraIndex = async (items: [], fallbackIndex: number): Promise<number> => {
