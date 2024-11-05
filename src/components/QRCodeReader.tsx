@@ -65,30 +65,49 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     // eslint-disable-next-line
   }, [])
 
-  const getAvailableDevicesSafe = async (retry: boolean) => {
-    return BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
-      if (retry && _devices.length <= 1) {
-        // retry
-        setTimeout(() => {
-          getAvailableDevicesSafe(false)
-        }, 300)
-      } else {
-        setCameras(_devices)
+  useEffect(() => {
+    if (cameras && cameras.length > 0) {
+      if (cameras.length === 1) setSelectedIndex(0)
+      else {
+        let favoriteCameraIndex = getFavoriteCameraIndexSafe(cameras.length)
+        // Select the default one if present
+        if (props.default) {
+          getDefaultCameraIndex(cameras, favoriteCameraIndex).then(index => setSelectedIndex(index))
+        } else {
+          setSelectedIndex(favoriteCameraIndex)
+        }
       }
-    }).catch(() => {})
-  }
-
-  /**
-   * 
-   * @returns the number of availableDevices
-   */
-  const setAvailableDevices = async (retry: boolean) => {
-    if (retry) {
-      return BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
-        setCameras(_devices)
-        return _devices?.length || 0
-      })
     }
+  }, [cameras])
+
+  useEffect(() => {
+    if (cameras && selectedIndex !== undefined) {
+      let retry = true
+      _codeReader = new BrowserMultiFormatReader(hints)
+
+      onCameraChange().catch(() => {
+        // Sometimes camera is not ready. This is a workaround to retry connnection
+        if (retry) {
+          retry = false
+          onCameraChange()
+        }
+      })
+      if (!props.default) localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA, `${selectedIndex}`)
+    }
+    //eslint-disable-next-line
+  }, [selectedIndex])
+
+  const getAvailableDevicesSafe = async (retry: boolean) => {
+    // On mobile phone, on the first run listVideoInputDevices() (same as navigator.mediaDevices.enumerateDevices()) return only one device.
+    // A workaround to fix it is to call getUserMedia() before it. In this way all the available devices will be in the list
+    navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+      // stop previous track to fix the problem that some devices in the list arenìt available
+      stream.getTracks().forEach(track => track.stop())
+
+      BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
+        setCameras(_devices)
+      })
+    })
   }
 
   const getDefaultCameraIndex = async (items: [], fallbackIndex: number): Promise<number> => {
@@ -124,38 +143,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       return 0
     }
   }
-
-  useEffect(() => {
-    if (cameras && cameras.length > 0) {
-      if (cameras.length === 1) setSelectedIndex(0)
-      else {
-        let favoriteCameraIndex = getFavoriteCameraIndexSafe(cameras.length)
-        // Select the default one if present
-        if (props.default) {
-          getDefaultCameraIndex(cameras, favoriteCameraIndex).then(index => setSelectedIndex(index))
-        } else {
-          setSelectedIndex(favoriteCameraIndex)
-        }
-      }
-    }
-  }, [cameras])
-
-  useEffect(() => {
-    if (cameras && selectedIndex !== undefined) {
-      let retry = true
-      _codeReader = new BrowserMultiFormatReader(hints)
-
-      onCameraChange().catch(() => {
-        // Sometimes camera is not ready. This is a workaround to retry connnection
-        if (retry) {
-          retry = false
-          onCameraChange()
-        }
-      })
-      if (!props.default) localStorage.setItem(LOCAL_STORAGE_KEY_FAVORITE_CAMERA, `${selectedIndex}`)
-    }
-    //eslint-disable-next-line
-  }, [selectedIndex])
 
   const onCameraChange = async () => {
     if (selectedIndex !== undefined && cameras && cameras.length > +selectedIndex) {
