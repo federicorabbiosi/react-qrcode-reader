@@ -97,10 +97,16 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     //eslint-disable-next-line
   }, [selectedIndex])
 
+  const getBackCameraIndexByLabel = (_devices: any) => {
+    // try to get the back camera
+    let backCamera = _devices.findIndex((cam: any) => cam.label?.includes("back"))
+    return backCamera !== -1 ? backCamera : 0
+  }
+
   const getAvailableDevicesSafe = async (retry: boolean) => {
     // On mobile phone, on the first run listVideoInputDevices() (same as navigator.mediaDevices.enumerateDevices()) return only one device.
     // A workaround to fix it is to call getUserMedia() before it. In this way all the available devices will be in the list
-    navigator.mediaDevices.getUserMedia({video: true}).then((stream) => {
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
       // stop previous track to fix the problem that some devices in the list arenìt available
       stream.getTracks().forEach(track => track.stop())
 
@@ -111,8 +117,12 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
   }
 
   const getDefaultCameraIndex = async (items: [], fallbackIndex: number): Promise<number> => {
-    let _cameraIndex = items.length >= fallbackIndex ? fallbackIndex : 0 // Array length check
-    _cameraIndex = items.findIndex((item: any) => item?.label?.includes(props.default))
+    let _backCamera = getBackCameraIndexByLabel(items)
+    let _cameraIndex = items.length >= fallbackIndex ? fallbackIndex : _backCamera // Array length check
+
+    if (props.default) {
+      _cameraIndex = items.findIndex((item: any) => item?.label?.includes(props.default))
+    }
     if (_cameraIndex === -1) {
       // Try facingMode prop
       return navigator.mediaDevices.getUserMedia({
