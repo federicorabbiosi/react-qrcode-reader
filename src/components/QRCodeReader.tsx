@@ -113,7 +113,8 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       BrowserQRCodeReader.listVideoInputDevices().then(_devices => {
         setCameras(_devices)
       })
-    })
+    }).catch(e =>
+      console.log("QRCodeReader:ERR4", e))
   }
 
   const getDefaultCameraIndex = async (items: [], fallbackIndex: number): Promise<number> => {
@@ -171,7 +172,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       try {
         return (video.srcObject as any).getTracks()[0].getCapabilities().torch as boolean
       } catch (e) {
-        console.error(e)
+        console.log("QRCodeReader:ERR3", e)
         return false
       }
     }
@@ -197,9 +198,13 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       }).then(controls => {
         _controlsRef.current = controls
         // Check if flashLight is available, and show action button
-        setFlash(isFlashLightAvailable() === true ? false : 'unavailable')
+        try {
+          setFlash(isFlashLightAvailable() === true ? false : 'unavailable')
+        } catch {
+          console.log("QRCodeReader:ERR1")
+        }
       }).catch((e) => {
-        console.log(e)
+        console.log("QRCodeReader:ERR2")
         // select the first one ???
       })
     }
@@ -267,7 +272,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
           setFlash(newFlashValue)
         } catch (e) {
           // Error changing torch value
-          console.log(e)
+          console.log("QRCodeReader:ERR5", e)
         }
       }
     }
