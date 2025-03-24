@@ -253,7 +253,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     }
   }
 
-  /*
   const FlashlightButton = () => {
 
     const onButtonClick = () => {
@@ -283,7 +282,6 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
       return <FlashlightOnRoundedIcon fontSize='large' onClick={onButtonClick} />
     }
   }
-    */
 
   return <div className='qrcode-reader'>
     <section style={{ ...props.style }}>
@@ -294,7 +292,7 @@ const QRCodeReader = (props: IQRCodeReaderProps) => {
     </section>
     <div className='actions-icon-root'>
       {cameras && cameras.length > 1 ? <CameraswitchRoundedIcon fontSize='large' onClick={changeCamera} /> : null}
-      {/*flash !== 'unavailable' ? <FlashlightButton /> : null*/}
+      {flash !== 'unavailable' ? <FlashlightButton /> : null}
     </div>
   </div>
 }
